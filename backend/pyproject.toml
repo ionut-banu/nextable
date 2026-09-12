@@ -1,0 +1,31 @@
+[project]
+name = "nextable-backend"
+version = "0.1.0"
+description = "Nextable — restaurant waitlist manager, API"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.34",
+    "pydantic>=2.10",
+    "pydantic-settings>=2.7",
+    "itsdangerous>=2.2",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3",
+    "httpx2>=2.12.0",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+# Warnings are failures, so a deprecation we introduce breaks the build. The
+# one exception is raised inside starlette itself and matched exactly.
+filterwarnings = [
+    "error",
+    "ignore:The anyio.abc.BlockingPortal alias is deprecated:DeprecationWarning:starlette.testclient",
+]
+
+[tool.uv]
+package = false
