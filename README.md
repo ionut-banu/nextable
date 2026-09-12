@@ -8,16 +8,16 @@ The name is "next" + "table" — the next available table.
 
 Built for the AI Dev Tools Zoomcamp 2026 (homework 02).
 
-## Status: specification
+## Status
 
-Nothing is implemented yet. The approved specification is [docs/spec.md](docs/spec.md), and implementation will follow its four stages:
+There is no backend yet. The approved specification is [docs/spec.md](docs/spec.md), and implementation follows its four stages:
 
 1. **Specification** — the spec, the API contract, and the agent instructions.
-2. **Frontend prototype** — both surfaces against a mocked API, clickable end to end.
+2. **Frontend prototype** — both surfaces against a mocked API, clickable end to end. *In progress: the app is built in [frontend/](frontend/); see [frontend/README.md](frontend/README.md) to run it.*
 3. **Backend integration** — real routes and wait-time logic.
 4. **Persistence** — a database and a seed command.
 
-This README will grow setup and usage instructions as those stages land. Until then the spec is the place to look.
+This README will grow setup and usage instructions as the backend stages land.
 
 ## Scope
 

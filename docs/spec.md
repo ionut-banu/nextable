@@ -171,7 +171,7 @@ All timestamps are ISO-8601 UTC. All request and response bodies are JSON.
 | GET | `/api/config` | Current settings. |
 | PUT | `/api/config` | Update settings. |
 
-Party responses to the host include every field, `token` included, so the console can render the guest link and its QR code.
+Party responses to the host include every field, `token` included, so the console can render the guest link and its QR code. They also carry `current_estimate_minutes` and `position_in_line` — the live recalculation of section 6.4 for that party — so a queue row can show a falling estimate without the frontend reimplementing the rule. Both are null once the party reaches a terminal status.
 
 ### 8.3 Public — no auth
 

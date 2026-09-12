@@ -1,0 +1,134 @@
+.guest {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  padding: var(--gap-4) var(--gap-3) var(--gap-5);
+  max-width: 34rem;
+  margin: 0 auto;
+}
+
+.guest-venue {
+  font-family: var(--display);
+  font-variation-settings: 'wdth' 88;
+  font-weight: 600;
+  font-size: var(--step-1);
+  letter-spacing: 0.02em;
+  color: var(--bone-dim);
+}
+
+.guest-core {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: var(--gap-5) 0;
+}
+
+/* The position is the product, so it is set as type, not as a statistic. */
+.guest-rank {
+  font-family: var(--display);
+  font-variation-settings: 'wdth' 125;
+  font-weight: 700;
+  font-size: clamp(5.5rem, 30vw, 11rem);
+  line-height: 0.82;
+  letter-spacing: -0.03em;
+  display: flex;
+  align-items: baseline;
+}
+
+.guest-rank-suffix {
+  font-size: 0.34em;
+  font-variation-settings: 'wdth' 100;
+  font-weight: 600;
+  margin-left: 0.08em;
+}
+
+.guest-rank-line {
+  margin-top: var(--gap-3);
+  font-size: var(--step-2);
+  max-width: 22ch;
+}
+
+.guest-estimate {
+  margin-top: var(--gap-4);
+  padding-top: var(--gap-3);
+  border-top: 1px solid var(--line);
+  font-family: var(--display);
+  font-variation-settings: 'wdth' 100;
+  font-weight: 600;
+  font-size: var(--step-3);
+}
+
+.guest-estimate-note {
+  color: var(--bone-dim);
+  font-family: var(--ui);
+  font-size: var(--step-0);
+  font-weight: 400;
+  margin-top: var(--gap-1);
+}
+
+.guest-foot {
+  color: var(--bone-dim);
+  font-size: 0.9375rem;
+  display: grid;
+  gap: 0.125rem;
+}
+
+/* --- called: the whole screen changes ------------------------------------ */
+
+.guest-called {
+  background: var(--brass);
+  color: var(--brass-ink);
+}
+
+.guest-called .guest-venue {
+  color: rgba(36, 26, 6, 0.65);
+}
+
+.guest-called .guest-foot {
+  color: rgba(36, 26, 6, 0.72);
+}
+
+.guest-ready {
+  font-family: var(--display);
+  font-variation-settings: 'wdth' 118;
+  font-weight: 800;
+  font-size: clamp(3rem, 15vw, 5.5rem);
+  line-height: 0.9;
+  letter-spacing: -0.02em;
+  text-transform: none;
+}
+
+.guest-ready-line {
+  margin-top: var(--gap-3);
+  font-size: var(--step-2);
+  max-width: 24ch;
+}
+
+.guest-ready-table {
+  margin-top: var(--gap-4);
+  padding-top: var(--gap-3);
+  border-top: 1px solid rgba(36, 26, 6, 0.28);
+  font-size: var(--step-1);
+}
+
+/* --- closed and error states --------------------------------------------- */
+
+.guest-closing {
+  font-family: var(--display);
+  font-variation-settings: 'wdth' 105;
+  font-weight: 600;
+  font-size: var(--step-3);
+  line-height: 1.15;
+  max-width: 18ch;
+}
+
+.guest-closing-line {
+  margin-top: var(--gap-3);
+  color: var(--bone-dim);
+  max-width: 34ch;
+}
+
+.guest-loading {
+  color: var(--bone-faint);
+}

@@ -1,0 +1,200 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--ink);
+  color: var(--bone);
+  font-family: var(--ui);
+  font-size: var(--step-0);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+h1,
+h2,
+h3,
+p,
+figure {
+  margin: 0;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid var(--brass);
+  outline-offset: 2px;
+}
+
+::selection {
+  background: var(--brass);
+  color: var(--brass-ink);
+}
+
+/* Numerals are the app's voice: wide, even-width, unmistakable at arm's length. */
+.numeral {
+  font-family: var(--display);
+  font-variation-settings: 'wdth' 112;
+  font-feature-settings: 'tnum' 1;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* --- controls ------------------------------------------------------------ */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--gap-1);
+  min-height: 2.5rem;
+  padding: 0 var(--gap-3);
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  background: transparent;
+  color: var(--bone);
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 120ms ease, border-color 120ms ease, color 120ms ease;
+}
+
+.btn:hover:not(:disabled) {
+  background: var(--field-raised);
+  border-color: var(--bone-faint);
+}
+
+.btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.btn-call {
+  background: var(--brass);
+  border-color: var(--brass);
+  color: var(--brass-ink);
+  font-weight: 600;
+}
+
+.btn-call:hover:not(:disabled) {
+  background: var(--brass-deep);
+  border-color: var(--brass-deep);
+  color: var(--brass-ink);
+}
+
+.btn-solid {
+  background: var(--bone);
+  border-color: var(--bone);
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.btn-solid:hover:not(:disabled) {
+  background: #fffaf0;
+  border-color: #fffaf0;
+  color: var(--ink);
+}
+
+.btn-quiet {
+  border-color: transparent;
+  color: var(--bone-dim);
+  padding: 0 var(--gap-2);
+}
+
+.btn-quiet:hover:not(:disabled) {
+  color: var(--bone);
+  background: var(--field-raised);
+  border-color: transparent;
+}
+
+.btn-leave {
+  border-color: transparent;
+  color: var(--brick);
+  padding: 0 var(--gap-2);
+}
+
+.btn-leave:hover:not(:disabled) {
+  background: rgba(192, 94, 68, 0.12);
+  border-color: transparent;
+  color: var(--brick);
+}
+
+.btn-small {
+  min-height: 2.125rem;
+  font-size: 0.875rem;
+}
+
+.field-label {
+  display: block;
+  margin-bottom: var(--gap-1);
+  color: var(--bone-dim);
+  font-size: 0.8125rem;
+  font-weight: 500;
+}
+
+.field-input {
+  width: 100%;
+  min-height: 2.625rem;
+  padding: 0 0.6875rem;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  background: var(--ink-deep);
+  color: var(--bone);
+}
+
+.field-input::placeholder {
+  color: var(--bone-faint);
+}
+
+.field-input:hover {
+  border-color: var(--bone-faint);
+}
+
+textarea.field-input {
+  min-height: 4.5rem;
+  padding-top: 0.5rem;
+  resize: vertical;
+}
+
+.notice {
+  padding: var(--gap-2) var(--gap-3);
+  border-left: var(--edge) solid var(--brick);
+  background: rgba(192, 94, 68, 0.1);
+  color: var(--bone);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
