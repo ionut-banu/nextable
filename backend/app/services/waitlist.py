@@ -99,10 +99,7 @@ def get_party_by_token(db: Database, token: str) -> PartyRecord:
 def list_queue(
     db: Database, active_only: bool = True, day: date | None = None
 ) -> list[PartyRecord]:
-    parties = db.active_parties() if active_only else db.all_parties()
-    if day is None:
-        return parties
-    return [party for party in parties if party.joined_at.date() == day]
+    return db.parties(active_only=active_only, day=day)
 
 
 # --- writing ---------------------------------------------------------------

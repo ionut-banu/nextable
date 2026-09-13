@@ -5,13 +5,17 @@ seed the mock database directly rather than waiting around.
 """
 from datetime import UTC, datetime, timedelta
 
+from itertools import count
+
 from app.models import PartyRecord, PartyStatus
+
+_tokens = count()
 
 
 def seed_seated(db, *, size=2, quoted=25, waited=30, days_ago=0):
     joined = datetime.now(UTC) - timedelta(days=days_ago, minutes=waited + 1)
     party = PartyRecord(
-        token=f"seeded-{len(db.parties)}",
+        token=f"seeded-{next(_tokens)}",
         name="Seated party",
         size=size,
         quoted_wait_minutes=quoted,
@@ -26,7 +30,7 @@ def seed_seated(db, *, size=2, quoted=25, waited=30, days_ago=0):
 def seed_closed(db, status, *, days_ago=0):
     joined = datetime.now(UTC) - timedelta(days=days_ago, minutes=20)
     party = PartyRecord(
-        token=f"seeded-{len(db.parties)}",
+        token=f"seeded-{next(_tokens)}",
         name="Gone",
         size=2,
         quoted_wait_minutes=25,

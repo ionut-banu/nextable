@@ -2,7 +2,10 @@
 
 Routers validate and delegate; services own the rules (AGENTS.md).
 """
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
+from sqlalchemy import inspect
 from fastapi.middleware.cors import CORSMiddleware
 
 from fastapi.requests import Request
@@ -11,9 +14,20 @@ from fastapi.responses import JSONResponse
 from app.api import auth, config, parties, stats, waitlist
 from app.auth import LoginRateLimiter
 from app.config import get_settings
+from app.db import get_engine
 from app.services.errors import IllegalTransition, PartyNotFound
 
 DESCRIPTION = "Walk-in waitlist for one restaurant: a host console and a guest status page."
+
+
+@asynccontextmanager
+async def lifespan(_: FastAPI):
+    """Fail loudly at boot rather than with "no such table" on the first request."""
+    if not inspect(get_engine()).has_table("parties"):
+        raise RuntimeError(
+            "The database has no schema. Run `uv run alembic upgrade head` first."
+        )
+    yield
 
 
 def create_app() -> FastAPI:
@@ -23,6 +37,7 @@ def create_app() -> FastAPI:
         title="Nextable",
         description=DESCRIPTION,
         version="0.1.0",
+        lifespan=lifespan,
     )
     app.state.login_limiter = LoginRateLimiter(
         limit=settings.login_attempt_limit,

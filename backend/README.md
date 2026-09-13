@@ -1,15 +1,18 @@
 # Nextable backend
 
-Stage 3 of [the build order](../docs/spec.md): real FastAPI routes, services and estimator over in-memory storage. Stage 4 replaces that storage with SQLAlchemy and SQLite.
+FastAPI, SQLAlchemy, and a database chosen by `DATABASE_URL`.
 
 ## Running it
 
 ```bash
-cp .env.example .env          # then change the password
+cp .env.example .env               # then change the password
 uv sync
-uv run pytest                 # 95 tests
+uv run alembic upgrade head        # create the schema
+uv run python scripts/seed.py      # optional: an evening already in progress
 uv run uvicorn app.main:app --reload --port 8000
 ```
+
+The app refuses to start against a database with no schema and tells you to migrate, rather than failing on the first request.
 
 Interactive docs at http://localhost:8000/docs. The frontend dev server on port 5173 is already allowed through CORS with credentials.
 
@@ -19,13 +22,34 @@ Environment, never in the database (spec 7):
 |---|---|
 | `STAFF_PASSWORD` | The one shared host-console password |
 | `SESSION_SECRET` | Signs the session cookie |
-| `DATABASE_URL` | Unused until stage 4 |
+| `DATABASE_URL` | Any URL SQLAlchemy understands; defaults to local SQLite |
 
-## The database is a mock
+## The database
 
-[app/db.py](app/db.py) is an in-memory `Database` with the shape a SQLAlchemy session will have: it hands out records, never rows. It is a FastAPI dependency, so tests inject a fresh one per test and stage 4 swaps the body of that module without touching a router or a service.
+[app/db.py](app/db.py) holds the engine, the session factory, and `Database` — a repository over one session. It is the only module that imports SQLAlchemy. Routers and services call the same methods they called when the store was a dictionary, which is why swapping it changed nothing above this layer.
 
-State lives in the process. Restarting the server empties the queue.
+One session per request, opened by the `get_db` dependency: commit if the handler returns, roll back if it raises. A 409 therefore leaves nothing half-written.
+
+### Staying database-agnostic
+
+Nothing in the schema is dialect-specific:
+
+- Statuses and buckets are `VARCHAR` with a `CHECK` constraint, not native enums, so adding one later is an ordinary migration.
+- Every timestamp goes through `UtcDateTime`, which refuses naive datetimes on the way in and returns aware UTC on the way out. SQLite has no timezone type, so without this a value would come back naive and compare wrongly.
+- Date filtering uses a half-open range rather than a date function, because every backend spells those differently.
+- SQLite gets two connection settings it needs; nothing else branches on the dialect.
+
+Moving to Postgres is a driver (`psycopg`), a `DATABASE_URL`, and `alembic upgrade head`.
+
+### Migrations
+
+```bash
+uv run alembic upgrade head                              # apply
+uv run alembic revision --autogenerate -m "what changed" # after editing models
+uv run alembic check                                     # models and schema still agree?
+```
+
+`alembic check` also runs as a test, so models and migrations cannot drift apart unnoticed.
 
 ## Layering
 
@@ -52,8 +76,12 @@ Written before the code they cover, each one watched failing first.
 | `test_waitlist.py` | The guest response carries exactly seven fields and leaks nothing; unknown and malformed tokens are the same bare 404 |
 | `test_stats.py` | Counts, average and median wait, quote accuracy, the day boundary |
 | `test_config.py` | Defaults, edits, and a changed table count moving the next quote |
+| `test_persistence.py` | Records outlive their session, a failed request writes nothing, the unique token and size constraints bite, naive datetimes are refused, and the schema stays portable |
+| `test_migrations.py` | A migrated database matches the models exactly |
 
-Warnings are errors (`filterwarnings = ["error"]`), with one exact third-party ignore for a deprecation raised inside starlette.
+Each test gets a private in-memory database and its own session, injected in place of `get_db`.
+
+Warnings are errors (`filterwarnings = ["error"]`), with one exact third-party ignore for a deprecation raised inside starlette. That setting has already caught a leaked connection and a deprecated test dependency.
 
 ## The contract
 

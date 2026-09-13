@@ -4,7 +4,7 @@ from datetime import date
 from statistics import mean, median
 
 from app.db import Database
-from app.models import PartyRecord, PartyStatus
+from app.models import PartyStatus
 from app.services.waitlist import turnaround_minutes
 
 
@@ -20,12 +20,8 @@ class DailyStats:
     quote_accuracy_minutes: int | None
 
 
-def _joined_on(party: PartyRecord, day: date) -> bool:
-    return party.joined_at.date() == day
-
-
 def summarise(db: Database, day: date) -> DailyStats:
-    on_the_day = [party for party in db.parties if _joined_on(party, day)]
+    on_the_day = db.parties(day=day)
     seated = [p for p in on_the_day if p.status is PartyStatus.SEATED and p.seated_at]
 
     waits = [turnaround_minutes(party) for party in seated]

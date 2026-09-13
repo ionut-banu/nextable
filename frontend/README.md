@@ -7,7 +7,7 @@ Both surfaces of [the spec](../docs/spec.md), talking to the real API.
 The frontend needs the backend up. In two terminals:
 
 ```bash
-cd backend  && uv run uvicorn app.main:app --reload --port 8000
+cd backend  && uv run alembic upgrade head && uv run uvicorn app.main:app --reload --port 8000
 cd frontend && npm run dev
 ```
 
@@ -17,7 +17,7 @@ The dev server proxies `/api` to port 8000, so the app and the API share an orig
 
 A guest page lives at `/w/{token}`. Add a party and use **Open guest view** in the dialog, or **Guest link** on any queue row. Put it in a second window beside the console: both poll every five seconds, so **Notify** turns the guest screen brass within five.
 
-The backend keeps its queue in memory, so restarting it empties the list.
+The queue is stored in SQLite, so it survives a restart. `uv run python scripts/seed.py` in `backend/` loads an evening already in progress.
 
 ```bash
 npm test       # which actions each status allows

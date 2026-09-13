@@ -31,16 +31,18 @@ def get_config(db: Database = Depends(get_db)) -> ConfigSchema:
 
 @router.put("", response_model=ConfigSchema)
 def update_config(payload: ConfigSchema, db: Database = Depends(get_db)) -> ConfigSchema:
-    db.config = ConfigRecord(
-        restaurant_name=payload.restaurant_name,
-        history_window=payload.history_window,
-        smoothing_constant=payload.smoothing_constant,
-        buckets={
-            bucket: BucketSettings(
-                default_turn_minutes=settings.default_turn_minutes,
-                table_count=settings.table_count,
-            )
-            for bucket, settings in payload.buckets.items()
-        },
+    saved = db.save_config(
+        ConfigRecord(
+            restaurant_name=payload.restaurant_name,
+            history_window=payload.history_window,
+            smoothing_constant=payload.smoothing_constant,
+            buckets={
+                bucket: BucketSettings(
+                    default_turn_minutes=settings.default_turn_minutes,
+                    table_count=settings.table_count,
+                )
+                for bucket, settings in payload.buckets.items()
+            },
+        )
     )
-    return to_schema(db.config)
+    return to_schema(saved)
