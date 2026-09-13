@@ -90,6 +90,15 @@ paths:
           type: string
           default: active
           title: Status
+      - name: date
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+            format: date
+          - type: 'null'
+          title: Date
       responses:
         '200':
           description: Successful Response

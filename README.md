@@ -13,11 +13,22 @@ Built for the AI Dev Tools Zoomcamp 2026 (homework 02).
 The approved specification is [docs/spec.md](docs/spec.md), and implementation follows its four stages:
 
 1. **Specification** — the spec, the API contract, and the agent instructions.
-2. **Frontend prototype** — both surfaces against a mocked API, clickable end to end. *In progress: the app is built in [frontend/](frontend/); see [frontend/README.md](frontend/README.md) to run it.*
-3. **Backend integration** — real routes and wait-time logic. *In progress: FastAPI in [backend/](backend/) over in-memory storage; see [backend/README.md](backend/README.md).*
+2. **Frontend prototype** — both surfaces, clickable end to end. Done; the mock it was built against has been removed.
+3. **Backend integration** — real routes and wait-time logic. *In progress: FastAPI over in-memory storage, with the frontend talking to it.*
 4. **Persistence** — a database and a seed command.
 
 The API contract is generated from the running app into [openapi.yaml](openapi.yaml).
+
+## Running it
+
+Two terminals, and the staff password from `backend/.env`:
+
+```bash
+cd backend  && uv run uvicorn app.main:app --reload --port 8000
+cd frontend && npm run dev          # http://localhost:5173/host
+```
+
+[backend/README.md](backend/README.md) and [frontend/README.md](frontend/README.md) have the detail. The queue lives in memory until stage 4, so restarting the API empties it.
 
 ## Scope
 

@@ -4,7 +4,7 @@ This module owns every business rule. Routers call in; nothing here knows
 about HTTP (AGENTS.md).
 """
 import secrets
-from datetime import UTC, datetime
+from datetime import UTC, date, datetime
 
 from app.db import Database
 from app.models import ConfigRecord, PartyRecord, PartyStatus, SizeBucket
@@ -96,8 +96,13 @@ def get_party_by_token(db: Database, token: str) -> PartyRecord:
     return party
 
 
-def list_queue(db: Database, active_only: bool = True) -> list[PartyRecord]:
-    return db.active_parties() if active_only else db.all_parties()
+def list_queue(
+    db: Database, active_only: bool = True, day: date | None = None
+) -> list[PartyRecord]:
+    parties = db.active_parties() if active_only else db.all_parties()
+    if day is None:
+        return parties
+    return [party for party in parties if party.joined_at.date() == day]
 
 
 # --- writing ---------------------------------------------------------------

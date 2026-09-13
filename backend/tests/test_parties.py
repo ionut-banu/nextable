@@ -152,3 +152,34 @@ def test_an_unknown_party_is_not_found(host):
 ])
 def test_host_routes_refuse_a_caller_without_a_session(client, method, path):
     assert getattr(client, method)(path).status_code == 401
+
+
+def test_the_queue_can_be_asked_for_one_day(host, db):
+    from datetime import UTC, datetime, timedelta
+
+    from app.models import PartyRecord, PartyStatus
+
+    yesterday = datetime.now(UTC) - timedelta(days=1)
+    db.add_party(
+        PartyRecord(
+            token="yesterday",
+            name="Last night",
+            size=2,
+            quoted_wait_minutes=25,
+            joined_at=yesterday,
+            status=PartyStatus.CANCELLED,
+            closed_at=yesterday,
+        )
+    )
+    add(host, name="Tonight")
+
+    day = yesterday.date().isoformat()
+    listed = host.get("/api/parties", params={"status": "all", "date": day}).json()
+
+    assert [party["name"] for party in listed] == ["Last night"]
+
+
+def test_without_a_date_the_queue_is_every_active_party(host):
+    add(host, name="Tonight")
+
+    assert len(host.get("/api/parties").json()) == 1

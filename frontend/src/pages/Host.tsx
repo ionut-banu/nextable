@@ -7,7 +7,6 @@ import {
   listParties,
   logout,
   me,
-  resetDemoData,
   updateConfig,
 } from '../api/client';
 import { errorMessage, isApiError } from '../api/errors';
@@ -150,19 +149,6 @@ function Console({ onSignedOut }: { onSignedOut: () => void }) {
     }
   }
 
-  async function handleReset() {
-    setBusy(true);
-    try {
-      await resetDemoData();
-      setConfig(null);
-      await queue.refresh();
-      setToast({ text: 'Demo data reset', tone: 'good' });
-    } catch (caught) {
-      handleFailure(caught);
-    } finally {
-      setBusy(false);
-    }
-  }
 
   async function handleSignOut() {
     await logout();
@@ -212,7 +198,6 @@ function Console({ onSignedOut }: { onSignedOut: () => void }) {
           saving={busy}
           savedAt={savedAt}
           onSave={(next) => void handleSaveConfig(next)}
-          onReset={() => void handleReset()}
         />
       )}
 

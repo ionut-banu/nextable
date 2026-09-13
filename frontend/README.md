@@ -1,49 +1,49 @@
 # Nextable frontend
 
-Stage 2 of [the build order](../docs/spec.md): both surfaces, clickable end to end, with no backend behind them.
+Both surfaces of [the spec](../docs/spec.md), talking to the real API.
 
 ## Running it
 
+The frontend needs the backend up. In two terminals:
+
 ```bash
-npm install
-npm run dev      # http://localhost:5173/host
-npm run test     # estimator and transition rules
-npm run build    # typecheck, then a production build
+cd backend  && uv run uvicorn app.main:app --reload --port 8000
+cd frontend && npm run dev
 ```
 
-The host console is at `/host`. The prototype's staff password is **bluefig**. A guest page lives at `/w/{token}`; the quickest way to reach one is to add a party and use **Open guest view** in the dialog that appears, or the **Guest link** button on any row.
+Then open http://localhost:5173/host. The staff password is whatever `STAFF_PASSWORD` says in `backend/.env`.
 
-Open the guest page in a second window next to the console. Both poll every five seconds and share one store, so tapping **Notify** turns the guest screen brass within five seconds — the demo the spec asks for.
+The dev server proxies `/api` to port 8000, so the app and the API share an origin and the session cookie is an ordinary first-party cookie. Nothing in the app knows the backend's address. To point it somewhere else, set `VITE_API_TARGET` (proxy target) or `VITE_API_BASE_URL` (absolute origin, for a deployed API).
 
-## Where the backend will plug in
+A guest page lives at `/w/{token}`. Add a party and use **Open guest view** in the dialog, or **Guest link** on any queue row. Put it in a second window beside the console: both poll every five seconds, so **Notify** turns the guest screen brass within five.
 
-Every call to the backend goes through [src/api/client.ts](src/api/client.ts) and nowhere else. Each function is named and shaped after a route in section 8 of the spec. When the real service exists, the bodies become `fetch` calls and nothing above that file changes.
+The backend keeps its queue in memory, so restarting it empties the list.
 
-Behind it, [src/api/mock/](src/api/mock/) is a small in-browser stand-in for the backend, and all of it is throwaway:
+```bash
+npm test       # which actions each status allows
+npm run build  # typecheck, then a production build
+```
 
-| File | Stands in for | Notes |
-|---|---|---|
-| `store.ts` | `services/waitlist.py` and the database | State in `localStorage`, so a host tab and a guest tab see one queue. Enforces the status transitions and raises the same 409s. |
-| `estimator.ts` | `services/estimator.py` | Pure. A port of spec section 6, kept honest by `tests/estimator.test.ts`. |
-| `seed.ts` | `make seed` | An evening already in progress, so the estimator has real turnarounds to blend from the first click. |
+## The API boundary
 
-Deleting that directory and rewriting the bodies in `client.ts` is the whole of the stage 3 frontend change.
+Every backend call goes through [src/api/client.ts](src/api/client.ts) and nowhere else — one function per route in section 8 of the spec, one `request` helper holding the fetch, the credentials, the query string, and the `{"detail": "..."}` error shape. No component calls `fetch`.
+
+[src/api/types.ts](src/api/types.ts) is hand-written against the spec. Now that [openapi.yaml](../openapi.yaml) is generated from the running app, these can be replaced by generated types.
 
 ## Structure
 
 ```
 src/
-  api/        client.ts (the only backend boundary), types.ts, mock/
+  api/        client.ts (the only backend boundary), types.ts, errors.ts
   components/ AddPartyForm, QueueRow, GuestLinkSheet, TodayPanel, SettingsPanel, Toast
   pages/      Host.tsx, Guest.tsx, Login.tsx
   hooks/      usePoll (the 5-second refresh), useTicker (live wait counters)
-  lib/        transitions.ts (which actions a status allows), format.ts
+  lib/        transitions.ts (which actions a status allows), buckets.ts, format.ts
   styles/     tokens.css, base.css, host.css, guest.css
-tests/        estimator and transition rules, run with vitest
+tests/        transition rules, run with vitest
 ```
 
-## What is not real yet
+Two rules the frontend keeps to, both from [AGENTS.md](../AGENTS.md):
 
-- The API types in `src/api/types.ts` are hand-written against the spec. They are replaced by types generated from `openapi.yaml` once that file exists.
-- There is no session cookie. The mock keeps a `signedIn` flag in the same store, and every host call checks it, so the 401 paths behave — but the password is compared in the browser and is not a security boundary.
-- Component render tests are not written yet; the two suites that exist cover the pure rules.
+- **It never owns a domain rule.** Wait estimates, positions, and which bucket a party falls into all arrive from the API. `lib/transitions.ts` decides which buttons to draw, but the service is what enforces the transition — an illegal one comes back as a 409 and surfaces as a message.
+- **It never reimplements the estimator.** That lives in `backend/app/services/estimator.py`, with its rules under test there.

@@ -1,4 +1,5 @@
 """The host's queue, spec 8.2. Routers validate and delegate."""
+from datetime import date
 from typing import Literal
 
 from fastapi import APIRouter, Depends, Query, status
@@ -55,8 +56,9 @@ def create_party(payload: PartyCreate, db: Database = Depends(get_db)) -> PartyR
 def list_parties(
     db: Database = Depends(get_db),
     status_filter: Literal["active", "all"] = Query("active", alias="status"),
+    day: date | None = Query(default=None, alias="date"),
 ) -> list[PartyResponse]:
-    parties = waitlist.list_queue(db, active_only=status_filter == "active")
+    parties = waitlist.list_queue(db, active_only=status_filter == "active", day=day)
     return [to_response(db, party) for party in parties]
 
 

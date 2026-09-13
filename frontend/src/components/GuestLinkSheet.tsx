@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { toDataURL } from 'qrcode';
 import type { Party } from '../api/types';
 import { guestUrl } from '../lib/format';
+import { BUCKET_LABELS } from '../lib/buckets';
 
 /**
  * Shown the moment a party is added, so the host can hand the link over at the
@@ -58,6 +59,13 @@ export function GuestLinkSheet({ party, onClose }: { party: Party; onClose: () =
         <h2 className="sheet-title" id="sheet-title">
           {party.name} is on the list
         </h2>
+        <p className="sheet-lead">
+          {BUCKET_LABELS[party.bucket].toLowerCase().replace('tables', 'In the line for tables')},
+          {' '}
+          {party.quoted_wait_minutes === 0
+            ? 'and we can seat them now.'
+            : `quoted about ${party.quoted_wait_minutes} minutes.`}
+        </p>
         <p className="sheet-lead">
           Let them scan this. It shows their place in line and turns bright when their table is
           ready.

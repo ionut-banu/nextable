@@ -9,8 +9,8 @@ export interface PollResult<T> {
 
 /**
  * Read something from the API now, then every `intervalMs` (spec 9: both
- * surfaces poll every 5 seconds). Also refreshes when another tab writes, so a
- * host tab and a guest tab stay in step during a demo.
+ * surfaces poll every 5 seconds). Two hosts on two tablets converge within one
+ * interval, which is the whole reason the queue is polled rather than cached.
  */
 export function usePoll<T>(
   load: () => Promise<T>,
@@ -51,12 +51,7 @@ export function usePoll<T>(
     }
     void refresh();
     const timer = window.setInterval(() => void refresh(), intervalMs);
-    const onStorage = () => void refresh();
-    window.addEventListener('storage', onStorage);
-    return () => {
-      window.clearInterval(timer);
-      window.removeEventListener('storage', onStorage);
-    };
+    return () => window.clearInterval(timer);
   }, [enabled, intervalMs, refresh]);
 
   return { data, error, loading, refresh };

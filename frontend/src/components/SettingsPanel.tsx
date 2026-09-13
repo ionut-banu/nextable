@@ -1,19 +1,17 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import type { Config, SizeBucket } from '../api/types';
-import { BUCKET_LABELS, BUCKET_ORDER } from '../api/mock/estimator';
+import { BUCKET_LABELS, BUCKET_ORDER } from '../lib/buckets';
 
 export function SettingsPanel({
   config,
   saving,
   savedAt,
   onSave,
-  onReset,
 }: {
   config: Config;
   saving: boolean;
   savedAt: number | null;
   onSave: (config: Config) => void;
-  onReset: () => void;
 }) {
   const [draft, setDraft] = useState<Config>(config);
 
@@ -149,9 +147,6 @@ export function SettingsPanel({
             {saving ? 'Saving' : 'Save settings'}
           </button>
           {savedAt !== null && <span className="settings-saved">Saved</span>}
-          <button className="btn btn-quiet" type="button" onClick={onReset}>
-            Reset the demo data
-          </button>
         </div>
       </form>
     </section>

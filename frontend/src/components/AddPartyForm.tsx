@@ -1,6 +1,5 @@
 import { useState, type FormEvent } from 'react';
 import type { CreatePartyInput } from '../api/types';
-import { BUCKET_LABELS, bucketForSize } from '../api/mock/estimator';
 
 const QUICK_SIZES = [1, 2, 3, 4, 5, 6, 7, 8];
 
@@ -71,7 +70,6 @@ export function AddPartyForm({
             onChange={(event) => setSize(Math.max(1, Number(event.target.value) || 1))}
           />
         </div>
-        <p className="add-bucket-note">{BUCKET_LABELS[bucketForSize(size)]}</p>
       </div>
 
       <div className="add-pair">

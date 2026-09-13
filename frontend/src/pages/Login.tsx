@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react';
-import { DEMO_PASSWORD, login } from '../api/client';
+import { login } from '../api/client';
 import { errorMessage } from '../api/errors';
 
 export function Login({ onSignedIn }: { onSignedIn: () => void }) {
@@ -51,10 +51,6 @@ export function Login({ onSignedIn }: { onSignedIn: () => void }) {
         <button className="btn btn-solid" type="submit" disabled={busy}>
           {busy ? 'Checking' : 'Sign in'}
         </button>
-
-        <p className="login-hint">
-          Prototype running on mock data. The password is {DEMO_PASSWORD}.
-        </p>
       </form>
     </main>
   );
